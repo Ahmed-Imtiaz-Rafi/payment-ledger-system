@@ -34,7 +34,7 @@ Type: query-verified
 Check:
 
 ```sql
-SELECT SUM(balance) FROM accounts;
+SELECT COALESCE(SUM(balance), 0) FROM accounts;
 ```
 
 The result must be exactly 0.
