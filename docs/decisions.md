@@ -58,3 +58,17 @@ One entry per significant choice: what, what else I considered, why.
 - Considered: a PLATFORM_FEE transfer type.
 - Chose to record the fee as its own entry under the cash-out transfer. The fee stays part of the same business event, and the entries remain separate so fees can be reported or refunded on their own.
 - Removed PLATFORM_FEE from the transfer type enum.
+
+## 011: Phone number lives on accounts, required for PERSONAL and AGENT, forbidden for FUNDING and FEE
+- Considered:
+  - A phone column that is optional on every account type.
+  - A phone column that is mandatory on every account type.
+  - A separate customer table that owns the phone number.
+- Chose a nullable, unique `phone_number` column on `accounts`, with a CHECK (`accounts_phone_by_type`): PERSONAL and AGENT accounts must have a phone number, and FUNDING and FEE accounts must not.
+- Why:
+  - Transfers are addressed by phone number, so the column has to be on the account.
+  - Mandatory on every type is impossible, because system accounts have no phone.
+  - Optional on every type would leave the rule to application code, and a forgotten check would become a bug.
+  - Forbidding phones on system accounts keeps them unreachable by phone, so a phone lookup can only ever return a customer account.
+  - A separate customer table is more than this project needs right now. I can revisit it when authentication is added.
+- Trade-off: the rule is rigid. If a system account ever needs a phone number, I have to change the constraint in a new migration.
