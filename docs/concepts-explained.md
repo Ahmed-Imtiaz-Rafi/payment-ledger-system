@@ -33,3 +33,14 @@ Spring Boot reads the project's `compose.yaml` at startup and starts every servi
 **In practice:** stereotypes for classes I write, `@Bean` for third-party classes I can't annotate.
 
 **Related, not a way to add beans:** `@PostConstruct` runs once after Spring creates the instance and injects its dependencies. Auto-configuration (`@EnableAutoConfiguration`) is a separate feature that creates beans such as the `DataSource` from the classpath.
+
+## Wiring beans together (dependency injection)
+
+A bean can use another bean in three ways, and all of them are dependency injection:
+1. **Direct call:** one `@Bean` method calls another, and Spring returns the existing instance.
+2. **Method parameter:** a `@Bean` method declares a parameter, and Spring injects the matching bean from the context.
+3. **`@Autowired`:** on a field, a constructor, or a setter.
+
+**Constructor injection is the one to prefer.** The field can be `final`, so the object can't exist half-built, and a test can pass in its own dependency without Spring. Field injection can't be `final`, and a plain test has no way to supply the dependency without reflection or a Spring context. Setter injection can't be `final` either, so I keep it for optional dependencies.
+
+When a class has only one constructor, `@Autowired` can be omitted. Spring applies it implicitly (since Spring 4.3). That is the form I use.
