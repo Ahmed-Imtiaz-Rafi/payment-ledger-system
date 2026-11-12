@@ -49,6 +49,7 @@
 - Whether to keep one platform account or the FUNDING/FEE split (currently split)
 - Open question: why Flyway migrations instead of Hibernate auto-creating tables?
 - JUnit and Testcontainers tests to replace reading the psql output by eye
+- Test IDENTITY vs SEQUENCE for ids in the load-testing step and keep whichever performs better. For now the entities use IDENTITY, which matches V1 (`BIGINT GENERATED ALWAYS AS IDENTITY`). Switching would need a new migration, with the sequence increment matching the entity's `allocationSize`.
 
 ## Invariants status
 - Enforced by constraints: 2 (balance by type), 6 (unique key), 7 (amount_positive)
