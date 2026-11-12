@@ -9,28 +9,31 @@
 - App starts and Spring launches the Postgres container
 - DBeaver connected (localhost:5432, db ledger)
 - Schema built as four Flyway migrations, all applied:
-    - V1 accounts (account_type enum, balance CHECK by type)
-    - V2 transfers (type and status enums, amount_positive, unique idempotency_key)
-    - V3 ledger_entries (FKs to accounts and transfers, signed amount, nonzero CHECK, entry_type enum)
-    - V4 phone_number on accounts (unique, required for PERSONAL and AGENT, forbidden for FUNDING and FEE)
+  - V1 accounts (account_type enum, balance CHECK by type)
+  - V2 transfers (type and status enums, amount_positive, unique idempotency_key)
+  - V3 ledger_entries (FKs to accounts and transfers, signed amount, nonzero CHECK, entry_type enum)
+  - V4 phone_number on accounts (unique, required for PERSONAL and AGENT, forbidden for FUNDING and FEE)
 - Wrote docs/invariant-checks.sql: constraint tests and invariant checks, run with psql from the terminal. Output matched every comment.
 - docs/invariants.md has 9 invariants, each with its type, a check, and the expected healthy result
-- docs/concepts-explained.md covers Flyway, Testcontainers, Docker Compose
+- docs/concepts-explained.md covers Flyway, Testcontainers, Docker Compose, the ways to add beans to the Spring context, and wiring beans with dependency injection
 - docs/decisions.md has entries 001 to 011 (011: phone number rule)
 - Decided: a transfer's amount is the principal only, and the fee is a separate FEE entry (invariant 9 depends on this)
 - Decided: PENDING transfers have no entries until they resolve, and FAILED transfers have none either
+- Read Spring Start Here chapters 2 and 3 (beans, wiring, dependency injection) and wrote the recaps in my own words
 
 ## Next
-1. Read Spring Start Here: the container, beans, and dependency injection chapters. Write a recap in my own words in concepts-explained.md.
-2. Write the entities for accounts, transfers, and ledger_entries, and confirm they map to the migrations (PostgreSQL enums and BigDecimal need explicit mapping).
-3. Write the repositories and test them with Testcontainers.
-4. Write the transfer service with @Transactional (the balance update and both entries in one transaction).
-5. DTOs and controllers.
+1. Write the entities for accounts, transfers, and ledger_entries, and confirm they map to the migrations (PostgreSQL enums and BigDecimal need explicit mapping).
+2. Write the repositories and test them with Testcontainers.
+3. Write the transfer service with @Transactional (the balance update and both entries in one transaction).
+4. DTOs and controllers.
+- In spare time: read Spring Start Here chapter 4 (abstractions) and add a recap to concepts-explained.md. It does not block the steps above.
 
 ## Reading plan (only when the step needs it)
-- Now: Spring Start Here (container, beans, dependency injection), then its Spring Data chapter
-- Docs before entities: Spring Data JPA "Repositories" and "Query methods", Hibernate entity mapping basics
-- Before the service step: the transactions chapter (@Transactional)
+- Now, for entities: Spring Data JPA "Repositories" and "Query methods", Hibernate entity mapping basics
+- Spare time: Spring Start Here chapter 4
+- Later, if needed: chapter 5 (bean scopes). Singleton is the default and beans are shared, which is already covered. Prototype scope is opt-in.
+- Before the repositories step: chapter 14 (Spring Data, 14.1 and 14.2). It uses Spring Data JDBC, so also use the Spring Data JPA docs.
+- Before the service step: chapter 13 (transactions, @Transactional)
 - Before concurrency: Postgres docs 13.1 and 13.2, then DDIA first edition chapter 7 (selected sections)
 - On hold until I'm told: everything on the concurrency list above. Light reading of DDIA chapter 1 only.
 
